@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from "react-toastify"
-import { login } from "../actions/authAction"
+import { authenticate, isAuth, login } from "../actions/authAction"
 import Layout from "../components/Layout"
 import Loading from "../components/Loading"
+import Router from 'next/router'
 
 const Login = () => {
     const [values, setValues] = useState({
@@ -26,8 +27,15 @@ const Login = () => {
                     setValues({...values, password: '', loading: false})
                     return toast.error(data.error)
                 } else {
-                    setValues({...values, email: '', password: '', loading: false})
+                    setValues({ ...values, email: '', password: '', loading: false })
                     toast.success('Logged in')
+                    authenticate(data, () => {
+                        if (isAuth() && isAuth().role === 1) {
+                            Router.push('/admin')
+                        } else if(isAuth() && isAuth().role === 0) {
+                            Router.push('/user')
+                        }
+                    })
                 }
             })
     }

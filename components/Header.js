@@ -2,6 +2,7 @@ import moment from 'moment'
 import Link from 'next/link'
 import Router from 'next/router'
 import NProgress from 'nprogress'
+import { isAuth, logout } from '../actions/authAction'
 
 Router.onRouteChangeStart     = url => NProgress.start();
 Router.onRouteChangeComplete  = url => NProgress.done();
@@ -15,13 +16,12 @@ const Header = () => {
     
     return (
         <>
-            <header  className="header--section">                
+            <header  className="header--section">
                 <div  className="header--topbar text-center text-white bg-dark fs--14">
-                    <div  className="container">                        
+                    <div  className="container">
                         <div  className="header--date">
                             <p>{dayName} <span  className="text-primary">{day} {monthName}</span> {year}</p>
-                        </div>                        
-                        
+                        </div>
                         <div  className="header--search-bar">
                             <form>
                                 <input type="search" name="search" placeholder="Search..."  className="form-control" required />
@@ -32,16 +32,15 @@ const Header = () => {
                         
                         <div  className="header--social">
                             <span>Follow Me:</span>
-
-                            <ul  className="nav">
+                            <ul className="nav">
                                 <li><a href="https://github.com/khr-rakib"  target="_blank"><i  className="fa fa-github"></i></a></li>
                                 <li><a href="https://www.linkedin.com/in/khrakib/" target="_blank"><i  className="fa fa-linkedin"></i></a></li>
                                 <li><a href="https://www.facebook.com/rakib.khr/" target="_blank"><i  className="fa fa-facebook"></i></a></li>
                                 <li><a href="https://twitter.com/rakib_khr" target="_blank"><i  className="fa fa-twitter"></i></a></li>
                             </ul>
-                        </div>                        
+                        </div>
                     </div>
-                </div>                
+                </div>
                 
                 <nav  className="header--navbar navbar">
                     <div  className="container">                        
@@ -49,7 +48,7 @@ const Header = () => {
                             <Link href="/">
                                 <a><img src="/img/logo.png" alt="" /></a>
                             </Link>
-                        </div>                        
+                        </div>
 
                         <div  className="navbar-header">
                             <button type="button"  className="navbar-toggle collapsed" data-toggle="collapse" data-target="#headerNav">
@@ -60,19 +59,24 @@ const Header = () => {
                             </button>
                         </div>
 
-                        <div id="headerNav"  className="navbar-collapse collapse text-center">                            
+                        <div id="headerNav"  className="navbar-collapse collapse text-center">
                             <ul  className="header--nav-links nav">
                                 <li><Link href="/"><a>Home</a></Link></li>
                                 <li><Link href="/about"><a>About</a></Link></li>
                                 <li><Link href="/categories"><a>Category</a></Link></li>
                                 <li><Link href="/contact"><a>Contact</a></Link></li>
-                                <li><Link href="/login"><a>Login</a></Link></li>
-                                <li><Link href="/register"><a>Register</a></Link></li>
-                                <li><Link href="/write"><a className="btn btn-info" style={{marginLeft: '20px'}}>Write Blog</a></Link></li>                                
-                            </ul>                            
+                                { !isAuth() && <> 
+                                    <li><Link href="/login"><a>Login</a></Link></li>
+                                    <li><Link href="/register"><a>Register</a></Link></li>
+                                </> }
+                                {isAuth() && <>
+                                    <li><Link href={isAuth().role === 0 ? '/user' : '/admin' }><a style={{ marginLeft: '20px', color: 'red' }}>Dashboard</a></Link></li>
+                                    <li><span style={{ cursor: "pointer", marginLeft: '20px' }} onClick={() => logout(() => Router.push('/login'))}>Logout</span></li>
+                                </>}
+                            </ul>
                         </div>
                     </div>
-                </nav>                
+                </nav>
             </header>
         </>
     )

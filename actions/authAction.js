@@ -1,4 +1,5 @@
 import { API } from '../utils/common'
+import cookie from 'js-cookie'
 
 
 export const preRegister = (name, email, password) => {
@@ -33,6 +34,15 @@ export const login = (email, password) => {
     }).then(res => res.json())    
 }
 
+export const logout = (next) => {
+    removeCookie('token')
+    removeLocalStorage('user')
+    next()
+    
+    return fetch(`${API}/logout`)
+        .then(res => res.json())
+}
+
 export const forgot = (email) => {
     return fetch(`${API}/forgot-password`, {
         method: "PUT",
@@ -53,4 +63,54 @@ export const reset = (resetInfo) => {
         },
         body: JSON.stringify(resetInfo)
     }).then(res => res.json())
+}
+
+// set cookie
+export const setCookie = (key, value) => {
+    if (process.browser) {
+        cookie.set(key, value, {expires: 1})
+    }
+}
+
+export const removeCookie = (key) => {
+    if (process.browser) {
+        cookie.remove(key, {expires: 1})
+    }
+}
+
+export const getCookie = (key) => {
+    if (process.browser) {
+        return cookie.get(key)
+    }
+}
+
+export const setLocalStorage = (key, value) => {
+    if (process.browser) {
+        localStorage.setItem(key, JSON.stringify(value))
+    }
+}
+
+export const removeLocalStorage = (key) => {
+    if (process.browser) {
+        localStorage.clear(key)
+    }
+}
+
+export const authenticate = (data, next) => {
+    setCookie('token', data.token)
+    setLocalStorage('user', data.user)
+    next()
+}
+
+export const isAuth = () => {
+    if (process.browser) {
+        const cookieChecked = getCookie('token')
+        if (cookieChecked) {
+            if (localStorage.getItem('user')) {
+                return JSON.parse(localStorage.getItem('user'))
+            } else {
+                return false
+            }
+        }
+    }
 }
