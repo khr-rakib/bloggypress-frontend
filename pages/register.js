@@ -1,29 +1,33 @@
+import Link from 'next/link'
 import { useState } from "react"
 import { toast } from "react-toastify"
 import { preRegister } from "../actions/authAction"
 import Layout from "../components/Layout"
+import Loading from "../components/Loading"
 
 const Register = () => {
     const [values, setValues] = useState({
         name: '',
         email: '',
-        password: ''
+        password: '',
+        loading: false
     })
     
-    const { name, email, password } = values
+    const { name, email, password, loading } = values
     
     const handleChange = e => {
         setValues({...values, [e.target.name]: e.target.value })
     }
     const handleSubmit = e => {
         e.preventDefault()
+        setValues({...values, loading: true})
         preRegister(name, email, password)
             .then(data => {
                 if (data.error) {
-                    setValues({...values, password: ''})
+                    setValues({...values, password: '', loading: false})
                     return toast.error(data.error)
                 } else {
-                    setValues({...values, name: '', email: '', password: ''})
+                    setValues({...values, name: '', email: '', password: '',loading: false})
                     toast.info(data.message)
                 }
             })
@@ -49,7 +53,12 @@ const Register = () => {
                                         <label>Password</label>
                                         <input type="password" className="form-control" value={password} name="password" onChange={handleChange} />
                                     </div>
-                                    <button className="btn btn-info" type="submit">Register</button>
+                                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                        <button className="btn btn-info" type="submit">Register {loading && <Loading />}</button>
+                                        <Link href="/auth/password/forgot">
+                                            <a>Forgot password?</a>
+                                        </Link>
+                                    </div>
                                 </form>
                             </div>
                         </div>

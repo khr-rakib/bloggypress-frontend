@@ -1,28 +1,32 @@
+import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from "react-toastify"
 import { login } from "../actions/authAction"
 import Layout from "../components/Layout"
+import Loading from "../components/Loading"
 
 const Login = () => {
     const [values, setValues] = useState({
         email: '',
-        password: ''
+        password: '',
+        loading: false
     })
     
-    const { email, password } = values
+    const { email, password, loading } = values
     
     const handleChange = e => {
         setValues({...values, [e.target.name]: e.target.value })
     }
     const handleSubmit = e => {
         e.preventDefault()
+        setValues({...values, loading: true})
         login(email, password)
             .then(data => {
                 if (data.error) {
-                    setValues({...values, password: ''})
+                    setValues({...values, password: '', loading: false})
                     return toast.error(data.error)
                 } else {
-                    setValues({...values, email: '', password: ''})
+                    setValues({...values, email: '', password: '', loading: false})
                     toast.success('Logged in')
                 }
             })
@@ -43,7 +47,12 @@ const Login = () => {
                                         <label>Password</label>
                                         <input type="password" className="form-control" value={password} name="password" onChange={handleChange} />
                                     </div>
-                                    <button className="btn btn-info" type="submit">Login</button>
+                                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                        <button className="btn btn-info" type="submit">Login {loading && <Loading/>}</button>
+                                        <Link href="/auth/password/forgot">
+                                            <a>Forgot password?</a>
+                                        </Link>
+                                    </div>
                                 </form>
                             </div>
                         </div>
