@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
-import { create, list, photo, remove, update } from "../../../actions/categoryAction"
+import { API } from "../../../utils/common"
+import { useState, useEffect } from "react"
 import Layout from "../../../components/Layout"
 import Admin from "../../../components/secure/Admin"
-import { API } from "../../../utils/common"
-
+import { create, list, remove, update } from "../../../actions/categoryAction"
 
 const Categories = () => {
     const [reload, setReload] = useState(false)
@@ -51,18 +50,29 @@ const Categories = () => {
             })
     }
 
-    const handleDelete = slug => {
-        remove(slug)
-            .then(data => {
-                if (data.error) {
-                    return toast.error(data.error)
-                }
-                setReload(!reload)
-                toast.success(data.message)
-            })
+    const categoryInsertForm = () => {
+        return (
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label>Category Name</label>
+                    <input type="text" onChange={handleChange('name')} value={name} className="form-control" placeholder="type category name..." required />
+                </div>
+                <div className="form-group">
+                    <label>Category Image
+                        <input type="file" onChange={handleChange('photo')} className="form-control" hidden />
+                    </label>
+                </div>
+                <button className="btn btn-info">Save</button>
+            </form>
+        )
     }
 
-    
+    const handleEdit = slug => {
+        setSwapForm(false)
+        let data = categories.find(c => c.slug === slug)
+        setValues({ ...values, name: data.name, updateSlug: slug })
+        handleEditForm()
+    }
 
     const handleEditForm = () => {
         return (
@@ -81,30 +91,6 @@ const Categories = () => {
         )
     }
 
-    const handleEdit = slug => {
-        setSwapForm(false)
-        let data = categories.find(c => c.slug === slug)
-        setValues({ ...values, name: data.name, updateSlug: slug })
-        handleEditForm()
-    }
-
-    const categoryInsertForm = () => {
-        return (
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Category Name</label>
-                    <input type="text" onChange={handleChange('name')} value={name} className="form-control" placeholder="type category name..." required />
-                </div>
-                <div className="form-group">
-                    <label>Category Image
-                        <input type="file" onChange={handleChange('photo')} className="form-control" hidden />
-                    </label>
-                </div>
-                <button className="btn btn-info">Save</button>
-            </form>
-        )
-    }
-
     const handleUpdate = e => {
         e.preventDefault()
         update(formData, updateSlug)
@@ -116,6 +102,17 @@ const Categories = () => {
                 setValues({...values, name: ''})
                 toast.success(data.message)
                 setReload(!reload)
+            })
+    }
+
+    const handleDelete = slug => {
+        remove(slug)
+            .then(data => {
+                if (data.error) {
+                    return toast.error(data.error)
+                }
+                setReload(!reload)
+                toast.success(data.message)
             })
     }
 

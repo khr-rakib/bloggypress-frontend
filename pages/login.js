@@ -14,6 +14,12 @@ const Login = () => {
     })
     
     const { email, password, loading } = values
+
+    if (isAuth() && isAuth().role == 1) {
+        Router.push('/admin')
+    } else if (isAuth() && isAuth().role == 0) {
+        Router.push('/user')
+    }
     
     const handleChange = e => {
         setValues({...values, [e.target.name]: e.target.value })
