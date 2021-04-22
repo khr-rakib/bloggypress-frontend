@@ -10,8 +10,8 @@ const AdminIndex = () => {
                     <div className="row">
                         <div className="col-md-3">
                             <div className="list-group">
-                                <Link href="/admin/manage/categories"><a class="list-group-item list-group-item-action">Manage Categories</a></Link>
-                                <Link href="/admin/manage/tags"><a class="list-group-item list-group-item-action">Tag Categories</a></Link>
+                                <Link href="/admin/manage/categories"><a className="list-group-item list-group-item-action">Manage Categories</a></Link>
+                                <Link href="/admin/manage/tags"><a className="list-group-item list-group-item-action">Tag Categories</a></Link>
                                 
                             </div>
                         </div>

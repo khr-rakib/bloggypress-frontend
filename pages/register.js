@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useState } from "react"
 import { toast } from "react-toastify"
-import { preRegister } from "../actions/authAction"
+import { isAuth, preRegister } from "../actions/authAction"
 import Layout from "../components/Layout"
 import Loading from "../components/Loading"
 
@@ -14,6 +14,12 @@ const Register = () => {
     })
     
     const { name, email, password, loading } = values
+
+    if (isAuth() && isAuth().role == 1) {
+        Router.push('/admin')
+    } else if (isAuth() && isAuth().role == 0) {
+        Router.push('/user')
+    }
     
     const handleChange = e => {
         setValues({...values, [e.target.name]: e.target.value })
